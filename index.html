@@ -1,0 +1,169 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechBridge East Africa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <div class="language-toggle">
+        <button onclick="switchLanguage('en')" class="btn">English</button>
+        <button onclick="switchLanguage('sw')" class="btn">Kiswahili</button>
+    </div>
+    <div id="cta-popup" class="popup">
+        <h3>Join TechBridge Today!</h3>
+        <p>Learn tech skills and land global jobs!</p>
+        <a href="training.html#signup" class="btn">Sign Up Now</a>
+        <button onclick="closePopup()" class="btn">Close</button>
+    </div>
+    <header class="animate__animated animate__fadeInDown">
+        <nav>
+            <div class="logo">TechBridge EA</div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="training.html">Training</a></li>
+                <li><a href="jobs.html">Jobs</a></li>
+                <li><a href="stories.html">Stories</a></li>
+                <li><a href="partners.html">Partners</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="hero">
+            <h1 class="animate__animated animate__pulse en">Transform Your Future with TechBridge East Africa</h1>
+            <h1 class="animate__animated animate__pulse sw" style="display: none;">Badilisha Maisha Yako na TechBridge Afrika Mashariki</h1>
+            <p class="en">Skills, Jobs, Impact—Empowering Youth Across the Region!</p>
+            <p class="sw" style="display: none;">Ujuzi, Kazi, Athari—Kuwapa Vijana Nguvu Katika Kanda!</p>
+            <a href="training.html#signup" class="btn animate__animated animate__bounce">Join Training Now</a>
+        </div>
+    </header>
+    <section class="stats animate__animated animate__fadeIn">
+        <div class="stat-box animate__animated animate__techPulse">
+            <h3>500+</h3>
+            <p class="en">Youth Trained</p>
+            <p class="sw" style="display: none;">Vijana Waliofunzwa</p>
+        </div>
+        <div class="stat-box animate__animated animate__techPulse">
+            <h3>200+</h3>
+            <p class="en">Jobs Created</p>
+            <p class="sw" style="display: none;">Kazi Zilizoundwa</p>
+        </div>
+        <div class="stat-box animate__animated animate__techPulse">
+            <h3>50%</h3>
+            <p class="en">Women Empowered</p>
+            <p class="sw" style="display: none;">Wanawake Waliowezeshwa</p>
+        </div>
+        <div class="stat-box animate__animated animate__techPulse">
+            <h3>75%</h3>
+            <p class="en">Course Completion</p>
+            <p class="sw" style="display: none;">Kukamilika kwa Kozi</p>
+        </div>
+    </section>
+    <section class="mission animate__animated animate__slideInLeft">
+        <h2 class="en">Our Mission</h2>
+        <h2 class="sw" style="display: none;">Dhamira Yetu</h2>
+        <p class="en">Empowering East African youth with digital skills for global opportunities, starting in rural Kenya and scaling to Tanzania, Uganda, and Rwanda.</p>
+        <p class="sw" style="display: none;">Kuwapa vijana wa Afrika Mashariki ujuzi wa kidijitali kwa fursa za kimataifa, kuanzia vijijini Kenya hadi Tanzania, Uganda, na Rwanda.</p>
+    </section>
+    <section class="vision animate__animated animate__slideInRight">
+        <h2 class="en">Our Vision</h2>
+        <h2 class="sw" style="display: none;">Maono Yetu</h2>
+        <p class="en">To create a tech-savvy generation that drives innovation, reduces unemployment, and builds sustainable communities across East Africa by 2030.</p>
+        <p class="sw" style="display: none;">Kuunda kizazi chenye ujuzi wa teknolojia kinachoongoza uvumbuzi, kupunguza ukosefu wa ajira, na kujenga jamii endelevu katika Afrika Mashariki ifikapo 2030.</p>
+    </section>
+    <section class="preview animate__animated animate__fadeInUp">
+        <h2 class="en">Explore Our Training</h2>
+        <h2 class="sw" style="display: none;">Chunguza Mafunzo Yetu</h2>
+        <p class="en">Learn coding, AI, data annotation, and agri-tech—built for East Africa’s future.</p>
+        <p class="sw" style="display: none;">Jifunze kuandika kodu, AI, uchambuzi wa data, na teknolojia ya kilimo—iliyoundwa kwa mustakbali wa Afrika Mashariki.</p>
+        <a href="training.html" class="btn animate__animated animate__bounce">See Courses</a>
+        <a href="brochure.pdf" class="btn animate__animated animate__bounce" download>Download Program Guide</a>
+    </section>
+    <section class="team animate__animated animate__fadeIn">
+        <h2 class="en">Our Team</h2>
+        <h2 class="sw" style="display: none;">Timu Yetu</h2>
+        <div class="team-member">
+            <h3>Walter Koech</h3>
+            <p>CEO | Nairobi, Kenya | +254714392009</p>
+            <!-- Edit; add photo: <img src="walter.jpg" alt="Walter Koech"> -->
+        </div>
+        <div class="team-member">
+            <h3>Aisha Mwangi</h3>
+            <p>Training Coordinator | Kisumu, Kenya</p>
+            <!-- Edit; add photo -->
+        </div>
+        <div class="team-member">
+            <h3>John Otieno</h3>
+            <p>Tech Trainer | Eldoret, Kenya</p>
+            <!-- Edit; add photo -->
+        </div>
+    </section>
+    <section class="social-feed animate__animated animate__fadeIn">
+        <h2 class="en">What’s Happening on X</h2>
+        <h2 class="sw" style="display: none;">Nini Kinatendeka kwenye X</h2>
+        <div class="feed-grid">
+            <div class="feed-post">
+                <p class="en">"Just graduated from TechBridge’s Python course! Now coding for a Nairobi startup! #TechBridgeEA" – @JaneKariuki</p>
+                <p class="sw" style="display: none;">"Nimehitimu kozi ya Python ya TechBridge! Sasa ninaandika kodu kwa startup ya Nairobi! #TechBridgeEA" – @JaneKariuki</p>
+            </div>
+            <div class="feed-post">
+                <p class="en">"Data annotation opened global doors for me. Thanks, TechBridge! #YouthEmpowerment" – @AliMwanza</p>
+                <p class="sw" style="display: none;">"Uchambuzi wa data ulinifungulia milango ya kimataifa. Asante, TechBridge! #YouthEmpowerment" – @AliMwanza</p>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <h3 class="en">Stay Updated</h3>
+        <h3 class="sw" style="display: none;">Endelea Kusasishwa</h3>
+        <form class="newsletter">
+            <input type="email" placeholder="Enter your email / Weka barua pepe yako" required>
+            <button type="submit" class="btn">Subscribe / Jisajili</button>
+        </form>
+        <p>Led by Walter Koech, CEO | Nairobi, Kenya | +254714392009 | info@techbridgeea.org | Follow us on <a href="https://x.com/TechBridgeEA">X</a></p>
+        <p>© 2025 TechBridge EA. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

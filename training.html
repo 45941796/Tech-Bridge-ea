@@ -1,0 +1,123 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training - TechBridge East Africa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="language-toggle">
+        <button onclick="switchLanguage('en')" class="btn">English</button>
+        <button onclick="switchLanguage('sw')" class="btn">Kiswahili</button>
+    </div>
+    <header class="animate__animated animate__fadeInDown">
+        <nav>
+            <div class="logo">TechBridge EA</div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="training.html">Training</a></li>
+                <li><a href="jobs.html">Jobs</a></li>
+                <li><a href="stories.html">Stories</a></li>
+                <li><a href="partners.html">Partners</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="training animate__animated animate__fadeIn">
+        <h1 class="en">Unlock Your Potential with Free Tech Training</h1>
+        <h1 class="sw" style="display: none;">Fungua Uwezo Wako na Mafunzo ya Teknolojia Bila Malipo</h1>
+        <p class="en">Learn in-demand skills like coding, AI, data annotation, and agri-tech—accessible online or offline!</p>
+        <p class="sw" style="display: none;">Jifunze ujuzi unaohitajika kama kuandika kodu, AI, uchambuzi wa data, na teknolojia ya kilimo—inapatikana mtandaoni au nje ya mtandao!</p>
+        <div class="course-grid">
+            <div class="course animate__animated animate__slideInLeft">
+                <h3 class="en">Python Coding</h3>
+                <h3 class="sw" style="display: none;">Kuandika Kodu za Python</h3>
+                <p class="en">Master Python for web and AI development. 3 months, beginner-friendly.</p>
+                <p class="sw" style="display: none;">Jifunze Python kwa maendeleo ya wavuti na AI. Miezi 3, rahisi kwa wanaoanza.</p>
+                <a href="#signup" class="btn animate__animated animate__bounce">Enroll Now / Jisajili Sasa</a>
+            </div>
+            <div class="course animate__animated animate__slideInUp">
+                <h3 class="en">Data Annotation</h3>
+                <h3 class="sw" style="display: none;">Uchambuzi wa Data</h3>
+                <p class="en">Learn to label data for AI models, opening global remote jobs.</p>
+                <p class="sw" style="display: none;">Jifunze kuweka lebo kwenye data kwa miundo ya AI, ikifungua kazi za mbali za kimataifa.</p>
+                <a href="#signup" class="btn animate__animated animate__bounce">Enroll Now / Jisajili Sasa</a>
+            </div>
+            <div class="course animate__animated animate__slideInRight">
+                <h3 class="en">Agri-Tech Apps</h3>
+                <h3 class="sw" style="display: none;">Programu za Teknolojia ya Kilimo</h3>
+                <p class="en">Build tools to boost farming with tech, tailored for East Africa.</p>
+                <p class="sw" style="display: none;">Jenga zana za kuimarisha kilimo kwa teknolojia, zilizoboreshwa kwa Afrika Mashariki.</p>
+                <a href="#signup" class="btn animate__animated animate__bounce">Enroll Now / Jisajili Sasa</a>
+            </div>
+            <div class="course animate__animated animate__slideInLeft">
+                <h3 class="en">Digital Marketing</h3>
+                <h3 class="sw" style="display: none;">Masoko ya Kidijitali</h3>
+                <p class="en">Grow businesses online with SEO and social media strategies.</p>
+                <p class="sw" style="display: none;">Kuza Biashara Mtandaoni kwa SEO na Mikakati ya Mitandao ya Kijamii.</p>
+                <a href="#signup" class="btn animate__animated animate__bounce">Enroll Now / Jisajili Sasa</a>
+            </div>
+        </div>
+        <h2 id="signup" class="en">Join Today</h2>
+        <h2 id="signup" class="sw" style="display: none;">Jiunge Leo</h2>
+        <form>
+            <input type="text" placeholder="Full Name / Jina Kamili" required>
+            <input type="email" placeholder="Email / Barua Pepe" required>
+            <select required>
+                <option value="">Select Gender / Chagua Jinsia</option>
+                <option value="female">Female / Mwanamke</option>
+                <option value="male">Male / Mwanamume</option>
+                <option value="other">Other / Nyingine</option>
+            </select>
+            <input type="text" placeholder="Location (e.g., Nairobi, Kenya) / Mahali (k.m., Nairobi, Kenya)" required>
+            <button type="submit" class="btn animate__animated animate__bounce">Apply Now / Omba Sasa</button>
+        </form>
+    </section>
+    <footer>
+        <p>Led by Walter Koech, CEO | Nairobi, Kenya | +254714392009 | info@techbridgeea.org | Follow us on <a href="https://x.com/TechBridgeEA">X</a></p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
